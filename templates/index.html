@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Morning Brew | Artisan Morning Coffee & Bakery</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Top Morning Announcement Bar -->
+    <div class="morning-announcement">
+        <span>☀️ Good Morning! Fresh batches roasted at dawn. Order ahead for fast morning pickup.</span>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="brand-logo">
+                <span class="logo-icon">☕</span>
+                <div class="brand-text">
+                    <span class="brand-title">AURORA</span>
+                    <span class="brand-subtitle">Morning Brew</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="#menu" class="active">Daily Menu</a>
+                <a href="#about">Our Dawn Roasts</a>
+                <a href="#how-it-works">How It Works</a>
+            </nav>
+
+            <div class="nav-actions">
+                <!-- User Profile / Auth State Button -->
+                <div id="auth-actions">
+                    <button class="btn btn-outline" id="open-auth-btn" onclick="openAuthModal('login')">
+                        <span class="btn-icon">👤</span> Sign In
+                    </button>
+                </div>
+
+                <!-- My Orders Button (visible when logged in) -->
+                <button class="btn btn-ghost hidden" id="view-orders-btn" onclick="openOrdersModal()">
+                    📜 Orders
+                </button>
+
+                <!-- Cart Button -->
+                <button class="btn btn-primary cart-btn" id="open-cart-btn" onclick="toggleCartDrawer()">
+                    <span class="cart-icon">🛒</span>
+                    <span class="cart-label">Basket</span>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="hero-text-block">
+                <div class="morning-tag">
+                    <span class="sun-glow"></span>
+                    <span>Golden Hour Roasts • Pure Arabica</span>
+                </div>
+                <h1 class="hero-title">Start Your Morning With Golden Sunshine & Fresh Brew.</h1>
+                <p class="hero-desc">
+                    Hand-pulled espresso, velvety microfoam, and fresh flaky croissants baked daily at 5:00 AM. 
+                    Place your order in seconds and breeze through morning pickup.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="#menu" class="btn btn-cta">Browse Morning Menu ☕</a>
+                    <button class="btn btn-secondary" onclick="openAuthModal('register')">Create Account & Save 15%</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <strong>5:00 AM</strong>
+                        <span>Fresh Dawn Roast</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <strong>100%</strong>
+                        <span>Single-Origin Beans</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <strong>&lt; 5 Mins</strong>
+                        <span>Average Prep Time</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="coffee-card-showcase">
+                    <div class="steam-container">
+                        <span class="steam s1"></span>
+                        <span class="steam s2"></span>
+                        <span class="steam s3"></span>
+                    </div>
+                    <div class="cup-display">
+                        <span class="coffee-cup-art">☕</span>
+                    </div>
+                    <div class="floating-badge badge-top">
+                        <span class="badge-icon">✨</span>
+                        <div>
+                            <strong>Ethiopian Yirgacheffe</strong>
+                            <small>Floral & Wild Honey Notes</small>
+                        </div>
+                    </div>
+                    <div class="floating-badge badge-bottom">
+                        <span class="badge-icon">🔥</span>
+                        <div>
+                            <strong>Freshly Brewed</strong>
+                            <small>Order ready in 4 mins</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coffee Menu Section -->
+    <section class="menu-section" id="menu">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-kicker">Curated Morning Flavors</span>
+                <h2 class="section-heading">Dawn-Crafted Morning Menu</h2>
+                <p class="section-subtext">Choose your favorite hot artisanal coffee, refreshing iced brew, or warm bakery treat.</p>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="menu-filters">
+                <button class="filter-btn active" data-category="all" onclick="filterMenu('all', this)">All Items</button>
+                <button class="filter-btn" data-category="hot" onclick="filterMenu('hot', this)">☕ Hot Brews</button>
+                <button class="filter-btn" data-category="iced" onclick="filterMenu('iced', this)">🧊 Chilled & Iced</button>
+                <button class="filter-btn" data-category="bakery" onclick="filterMenu('bakery', this)">🥐 Bakery & Bites</button>
+            </div>
+
+            <!-- Dynamic Menu Grid -->
+            <div class="menu-grid" id="menu-grid">
+                <div class="menu-loading">
+                    <div class="spinner"></div>
+                    <p>Warming up the espresso machine...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-kicker">Simple 3-Step Morning Routine</span>
+                <h2 class="section-heading">How Aurora Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">🔐</div>
+                    <h3>Login or Sign Up</h3>
+                    <p>Create a quick account to personalize your morning coffee preferences and track your past orders.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">☕</div>
+                    <h3>Select Your Morning Brew</h3>
+                    <p>Pick single-origin espressos, creamy morning lattes, cold brews, and warm French pastries.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">✨</div>
+                    <h3>Grab & Savor</h3>
+                    <p>Your order is freshly extracted and packaged with care. Walk up to the morning counter and enjoy!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container about-grid">
+            <div class="about-text">
+                <span class="section-kicker">Our Philosophy</span>
+                <h2>Roasting Every Morning Like It's Day One</h2>
+                <p>
+                    At Aurora Morning Brew, mornings are sacred. We source ethically farmed Arabica beans from 
+                    high-altitude volcanic soils and roast them in small batches as the morning sun crests the horizon.
+                </p>
+                <p>
+                    Engineered with Python backend logic, rock-solid session handling, and cloud-ready Docker/AWS architecture, 
+                    this web app gives you an authentic, lightning-fast ordering experience.
+                </p>
+                <div class="coffee-perks">
+                    <div class="perk"><span class="perk-check">✓</span> 100% Fair Trade Certified</div>
+                    <div class="perk"><span class="perk-check">✓</span> Oat, Almond & Whole Milk Options</div>
+                    <div class="perk"><span class="perk-check">✓</span> Secure Password Hashing & Backend Logic</div>
+                </div>
+            </div>
+            <div class="about-quote-box">
+                <p class="quote">"Mornings don't start when the alarm rings. They start when the first drop of espresso hits the porcelain."</p>
+                <span class="quote-author">— Head Roaster & Barista</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <span class="logo-icon">☕</span>
+                    <span class="brand-title">AURORA MORNING BREW</span>
+                </div>
+                <p>Crafted with love, roasted at dawn, built on Python & Flask.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Aurora Morning Brew. Ready for Docker, AWS EC2, RDS & EKS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======================================================== -->
+    <!-- SLIDE-IN CART DRAWER -->
+    <!-- ======================================================== -->
+    <div class="cart-backdrop" id="cart-backdrop" onclick="toggleCartDrawer()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-drawer-header">
+            <h3>Your Morning Basket ☕</h3>
+            <button class="close-btn" onclick="toggleCartDrawer()">&times;</button>
+        </div>
+
+        <div class="cart-items-container" id="cart-items-container">
+            <!-- Dynamically populated by app.js -->
+            <div class="cart-empty-state">
+                <span class="empty-icon">☕</span>
+                <p>Your basket is currently empty.</p>
+                <small>Select some morning coffees to get started!</small>
+            </div>
+        </div>
+
+        <div class="cart-drawer-footer" id="cart-drawer-footer">
+            <div class="cart-notes">
+                <label for="order-note">Morning Note / Pickup Preference:</label>
+                <input type="text" id="order-note" placeholder="e.g. Extra hot, pickup in 10 mins" value="Morning pickup at the counter">
+            </div>
+
+            <div class="cart-summary-line">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">$0.00</span>
+            </div>
+            <div class="cart-summary-line">
+                <span>Estimated Tax (8%)</span>
+                <span id="cart-tax">$0.00</span>
+            </div>
+            <div class="cart-summary-line total-line">
+                <span>Total Amount</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+
+            <button class="btn btn-cta btn-block" id="checkout-btn" onclick="submitOrder()">
+                Place Morning Order ☀️
+            </button>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- AUTHENTICATION MODAL (LOGIN & SIGN UP) -->
+    <!-- ======================================================== -->
+    <div class="modal-backdrop" id="auth-modal" style="display: none;">
+        <div class="modal-card">
+            <button class="close-btn modal-close" onclick="closeAuthModal()">&times;</button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="login-tab-btn" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" id="register-tab-btn" onclick="switchAuthTab('register')">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-header">
+                    <h3>Welcome Back</h3>
+                    <p>Enter your credentials to unlock your morning order.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-identifier">Username or Email</label>
+                    <input type="text" id="login-identifier" required placeholder="barista_alex or alex@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" required placeholder="Enter your password">
+                        <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('login-password')">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="login-submit-btn">
+                    Sign In to Morning Brew
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                <div class="form-header">
+                    <h3>Join Aurora Brew</h3>
+                    <p>Save your morning favorites and earn dawn reward points.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" required placeholder="Choose a username">
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">Email Address</label>
+                    <input type="email" id="register-email" required placeholder="your.name@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="register-password" required minlength="6" placeholder="Min 6 characters">
+                        <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility('register-password')">👁️</button>
+                    </div>
+                    <small class="helper-text">Hashed securely on the backend before storage.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="register-submit-btn">
+                    Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- ORDERS HISTORY MODAL -->
+    <!-- ======================================================== -->
+    <div class="modal-backdrop" id="orders-modal" style="display: none;">
+        <div class="modal-card wide-modal">
+            <button class="close-btn modal-close" onclick="closeOrdersModal()">&times;</button>
+            <div class="form-header">
+                <h3>Your Morning Order History 📜</h3>
+                <p>Live status updates for your coffee and pastry orders.</p>
+            </div>
+            <div id="orders-list-container" class="orders-list">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container for Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Frontend Script -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

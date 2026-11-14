@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: morning-brew-app
+  labels:
+    app: morning-brew
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: morning-brew
+  template:
+    metadata:
+      labels:
+        app: morning-brew
+    spec:
+      containers:
+      - name: morning-brew
+        image: <YOUR_DOCKERHUB_OR_ECR_USERNAME>/morning-brew-coffee:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: morning-brew-secrets
+              key: secret-key
+              optional: true
+        # For direct RDS connection:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: morning-brew-secrets
+              key: database-url
+              optional: true
+        # For AWS Secrets Manager dynamic lookup via IAM Role (IRSA):
+        # - name: AWS_SECRET_NAME
+        #   value: "aurora/morning-brew/db-credentials"
+        # - name: AWS_REGION
+        #   value: "us-east-1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10

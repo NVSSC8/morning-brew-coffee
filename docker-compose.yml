@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Aurora Morning Brew Web Application
+  web:
+    build: .
+    container_name: morning_brew_web
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=morning-brew-dev-secret-key-super-secure
+      - DATABASE_URL=postgresql://coffee_user:morning_pass_2026@db:5432/coffee_db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - coffee-net
+
+  # PostgreSQL Database (Simulates AWS RDS locally)
+  db:
+    image: postgres:15-alpine
+    container_name: morning_brew_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: coffee_user
+      POSTGRES_PASSWORD: morning_pass_2026
+      POSTGRES_DB: coffee_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coffee_user -d coffee_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coffee-net
+
+volumes:
+  pgdata:
+
+networks:
+  coffee-net:
+    driver: bridge
