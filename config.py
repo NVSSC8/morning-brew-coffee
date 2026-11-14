@@ -12,15 +12,14 @@ class Config:
     secrets = get_db_credentials_from_secrets_manager()
     if secrets:
         # Expected keys in AWS Secret: username, password, host, port, dbname
-        user = secrets.get("username", "postgres")
+        user = secrets.get("username", "coffee_admin")
         password = secrets.get("password", "")
         host = secrets.get("host", "localhost")
         port = secrets.get("port", 5432)
         dbname = secrets.get("dbname", "coffee_db")
-        SQLALCHEMY_DATABASE_URI = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
     else:
-        # Fall back to DATABASE_URL environment variable, or local SQLite for easy instant run
-        SQLALCHEMY_DATABASE_URI = os.getenv(
-            "DATABASE_URL", 
-            f"sqlite:///{os.path.join(os.path.abspath(os.path.dirname(__file__)), 'coffee_shop.db')}"
-        )
+        db_url = os.getenv("DATABASE_URL")
+        if db_url and db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        SQLALCHEMY_DATABASE_URI = db_url or f"sqlite:///{os.path.join(os.path.abspath(os.path.dirname(__file__)), 'coffee_shop.db')}"
